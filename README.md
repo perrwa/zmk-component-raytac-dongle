@@ -79,4 +79,60 @@ For some reason you *can't* double-click the reset button like on many boards.
 
 ### Flashing The CX-40 (Built-In Bootloader)
 
-The CX-40 does not have a UF2 bootloader. It uses Nordic's built-in Open bootloader and is flashed via `nrfutil` over USB serial. Follow the [Zephyr flashing instructions](https://docs.zephyrproject.org/latest/boards/raytac/mdbt50q_cx_40_dongle/doc/index.html#option-1-using-the-built-in-bootloader-only) for this board.
+The CX-40 does **not** have a UF2 bootloader—there is no drag-and-drop USB drive flashing. Instead, it ships with [Nordic's Open Bootloader](https://docs.nordicsemi.com/bundle/sdk_nrf5_v17.1.0/page/sdk_app_serial_dfu_bootloader.html) (from the nRF5 SDK), which uses DFU (Device Firmware Update) over USB serial.
+
+For full reference, see the [Zephyr board documentation for the MDBT50Q-CX-40](https://docs.zephyrproject.org/latest/boards/raytac/mdbt50q_cx_40_dongle/doc/index.html#option-1-using-the-built-in-bootloader-only).
+
+#### 1. Install nrfutil
+
+Install Nordic's `nrfutil` CLI via Homebrew, then add the `nrf5sdk-tools` subcommand:
+
+```bash
+brew install --cask nrfutil
+nrfutil install nrf5sdk-tools
+```
+
+Verify it's working:
+
+```bash
+nrfutil nrf5sdk-tools --help
+```
+
+#### 2. Enter Bootloader Mode
+
+Hold the button (on the far side of the board from the USB-C connector) while plugging the dongle into USB. The red LED should start a fade pattern, which means the bootloader is running.
+
+> **Note:** The button doesn't face up—you push it from the outside in, towards the USB connector.
+
+#### 3. Find Your Serial Port (macOS)
+
+With the dongle in bootloader mode, find the serial device:
+
+```bash
+ls /dev/cu.usb*
+```
+
+You should see something like `/dev/cu.usbmodem0001` or similar. Use this path in the flash command below.
+
+#### 4. Generate DFU Package
+
+Package the hex file for the bootloader:
+
+```bash
+nrfutil nrf5sdk-tools pkg generate \
+    --hw-version 52 \
+    --sd-req=0x00 \
+    --application corne_dongle-raytac_mdbt50q_cx_40-zmk.hex \
+    --application-version 1 \
+    corne_dongle.zip
+```
+
+#### 5. Flash
+
+Flash the DFU package over USB serial (replace the port with the one you found in step 3):
+
+```bash
+nrfutil nrf5sdk-tools dfu usb-serial -pkg corne_dongle.zip -p /dev/cu.usbmodemXXXX
+```
+
+When the command finishes, the dongle resets and runs your firmware. The bootloader is not overwritten, so you can repeat this process any time you need to re-flash.
