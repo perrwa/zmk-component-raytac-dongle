@@ -79,31 +79,4 @@ For some reason you *can't* double-click the reset button like on many boards.
 
 ### Flashing The CX-40 (Built-In Bootloader)
 
-The CX-40 is factory-programmed with the Open bootloader from Nordic's nRF5 SDK. You'll use Nordic's `nrfutil` to create firmware packages and flash them to the device. Make sure `nrfutil` is installed before proceeding.
-
-#### Entering Bootloader Mode
-
-Unplug the dongle, then hold the push button while plugging it into USB. The push button is on the far side of the board from the USB connector. Note that the button does not face up—you'll push it from the outside in, towards the USB connector. The red LED should start a fade pattern, signalling the bootloader is running.
-
-#### Packaging and Flashing
-
-After building your ZMK firmware (which produces a `.hex` file in `build/zephyr/zephyr.hex`), package it for the bootloader:
-
-```sh
-nrfutil nrf5sdk-tools pkg generate \
-        --hw-version 52 \
-        --sd-req=0x00 \
-        --application build/zephyr/zephyr.hex \
-        --application-version 1 \
-        firmware.zip
-```
-
-Then flash it onto the board over USB serial:
-
-```sh
-nrfutil nrf5sdk-tools dfu usb-serial -pkg firmware.zip -p /dev/ttyACM0
-```
-
-> **Note:** The serial port will vary by OS. It's `/dev/ttyACM0` on Linux, something like `COMx` on Windows, and something like `/dev/cu.usbmodemXXXX` on macOS.
-
-For more information, see [Nordic Semiconductor USB DFU](https://docs.zephyrproject.org/latest/boards/raytac/mdbt50q_cx_40_dongle/doc/index.html#option-1-using-the-built-in-bootloader-only) in the Zephyr docs.
+The CX-40 does not have a UF2 bootloader. It uses Nordic's built-in Open bootloader and is flashed via `nrfutil` over USB serial. Follow the [Zephyr flashing instructions](https://docs.zephyrproject.org/latest/boards/raytac/mdbt50q_cx_40_dongle/doc/index.html#option-1-using-the-built-in-bootloader-only) for this board.
