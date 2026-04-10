@@ -1,12 +1,12 @@
 # ZMK Raytac USB Dongle Module
 
-This repository adds a ZMK board definition named `raytac_mdbt50q_rx` for the [Raytac MDBT50Q-RX](https://www.raytac.com/product/ins.php?index_id=89) USB stick, with the intention of using it as a [ZMK keyboard dongle](https://zmk.dev/docs/development/hardware-integration/dongle).
+This repository adds ZMK board definitions named `raytac_mdbt50q_rx` for the [Raytac MDBT50Q-RX](https://www.raytac.com/product/ins.php?index_id=89) USB stick and `raytac_mdbt50q_cx_40` for the [Raytac MDBT50Q-CX-40](https://www.raytac.com/product/ins.php?index_id=156) USB stick, with the intention of using them as [ZMK keyboard dongles](https://zmk.dev/docs/development/hardware-integration/dongle).
 
 ![IMG_1775](./docs/images/IMG_1775.jpeg)
 
 ## Caveat: Buy One With A UF2 Bootloader Installed
 
-The stock MDBT50Q-RX does not come with the UF2 bootloader installed—that's the bit of code that allows it to mount itself as a USB drive for flashing.
+The stock MDBT50Q-RX and MDBT50Q-CX-40 do not come with the UF2 bootloader installed—that's the bit of code that allows it to mount itself as a USB drive for flashing.
 
 But! Some versions of the dongle do exist with the UF2 bootloader pre-installed, and that's what you want buy: [Adafruit (USA)](https://www.adafruit.com/product/5199) and [Pi Hut (UK)](https://thepihut.com/products/nrf52840-usb-key-with-tinyuf2-bootloader-bluetooth-low-energy-mdbt50q-rx) sell them, and probably others if you search around. I used the one from Adafruit.
 
@@ -51,11 +51,11 @@ manifest:
 
 ## Configuring Your Dongle
 
-Follow the setup steps in the [ZMK Keyboard Dongle docs](https://zmk.dev/docs/development/hardware-integration/dongle) to configure your keyboard and dongle. When you get to the [Building the Firmware](https://zmk.dev/docs/development/hardware-integration/dongle#building-the-firmware) step, you will use `board: raytac_mdbt50q_rx` in your `build.yml` file like so:
+Follow the setup steps in the [ZMK Keyboard Dongle docs](https://zmk.dev/docs/development/hardware-integration/dongle) to configure your keyboard and dongle. When you get to the [Building the Firmware](https://zmk.dev/docs/development/hardware-integration/dongle#building-the-firmware) step, you will use `board: raytac_mdbt50q_rx` (or `board: raytac_mdbt50q_cx_40` for the CX-40 dongle) in your `build.yml` file like so:
 
 ```yaml
 include:
-  # Config settings for the dongle
+  # Config settings for the dongle (use raytac_mdbt50q_rx or raytac_mdbt50q_cx_40)
   - board: raytac_mdbt50q_rx
     shield: my_keyboard_dongle
     
