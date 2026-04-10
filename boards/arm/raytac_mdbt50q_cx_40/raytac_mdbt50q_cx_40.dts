@@ -1,7 +1,6 @@
 /*
- * You need to update the bootloader that comes with the dongle
- * to an UF2-enabled one, like:
- * https://github.com/adafruit/Adafruit_nRF52_Bootloader/
+ * The CX-40 ships with Nordic's built-in Open bootloader (nRF5 SDK).
+ * No SoftDevice or UF2 — flashing is via nrfutil DFU over USB serial.
  */
 
 /dts-v1/;
@@ -64,9 +63,13 @@ zephyr_udc0: &usbd {
     };
 };
 
-/* Taken from the adafruit_itsybitsy_nrf52840.dts in Zephyr.
+/*
+ * Flash partition table for Nordic nRF5 SDK bootloader.
  *
- * You can compare this to the seeeduino_xiao_ble.dts they are very similar
+ *   0x000000 - 0x001000  MBR (4K)
+ *   0x001000 - 0x0ed000  Application (944K)
+ *   0x0ed000 - 0x0f4000  NVS storage (28K, 7 pages)
+ *   0x0f4000 - 0x100000  Nordic bootloader + settings (48K)
  */
 &flash0 {
 	partitions {
@@ -74,30 +77,22 @@ zephyr_udc0: &usbd {
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		/* To enable flashing with UF2 bootloader, we
-		 * must reserve a partition for SoftDevice.
-		 * See https://learn.adafruit.com/introducing-the-adafruit-nrf52840-feather?view=all#hathach-memory-map
-		 */
-		reserved_partition_0: partition@0 {
-			label = "SoftDevice";
-			reg = <0x000000000 DT_SIZE_K(152)>;
+		mbr_partition: partition@0 {
+			label = "MBR";
+			reg = <0x00000000 DT_SIZE_K(4)>;
 		};
-		code_partition: partition@26000 {
+		code_partition: partition@1000 {
 			label = "Application";
-			reg = <0x00026000 DT_SIZE_K(796)>;
+			reg = <0x00001000 DT_SIZE_K(944)>;
 		};
 
-		/*
-		 * The flash starting at 0x000ed000 and ending at
-		 * 0x000f4000 is reserved for use by the application.
-		 */
 		storage_partition: partition@ed000 {
 			label = "storage";
-			reg = <0x0000ed000 DT_SIZE_K(28)>;
+			reg = <0x000ed000 DT_SIZE_K(28)>;
 		};
 
 		boot_partition: partition@f4000 {
-			label = "UF2";
+			label = "Nordic Bootloader";
 			reg = <0x000f4000 DT_SIZE_K(48)>;
 		};
 	};
