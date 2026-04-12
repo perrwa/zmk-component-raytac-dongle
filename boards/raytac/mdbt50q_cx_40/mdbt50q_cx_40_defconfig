@@ -1,4 +1,5 @@
-# SPDX-License-Identifier: MIT
+# A lot of these options came from
+# zmk/app/boards/extensions/xiao_ble/xiao_ble.conf
 
 # Enable MPU
 CONFIG_ARM_MPU=y
@@ -9,7 +10,13 @@ CONFIG_HW_STACK_PROTECTION=y
 # Enable GPIO
 CONFIG_GPIO=y
 
-# Disable console/serial to save RAM (no CDC ACM on this board)
+# Console and serial
+#   Disable the console subsystem, saving RAM and flash space
+#   Disable serial driver support
+#   Disable UART-based console output
+#   Disable interrupt-driven UART (uses polling if UART is needed)
+#   Enable USB HID support for wired connection
+#   Enable Bluetooth for wireless connection
 CONFIG_CONSOLE=n
 CONFIG_SERIAL=n
 CONFIG_UART_CONSOLE=n
@@ -18,6 +25,12 @@ CONFIG_ZMK_USB=y
 CONFIG_ZMK_BLE=y
 
 # Flash / non-volatile storage
+#   Allow writing to flash memory from the application (needed for settings storage)
+#   Enable Non-Volatile Storage subsystem for persistent key-value storage
+#   Use NVS as the backend for Zephyr's settings subsystem
+#   Enable flash memory driver
+#   Enable flash page layout API for determining flash geometry
+#   Enable flash map/partition support
 CONFIG_MPU_ALLOW_FLASH_WRITE=y
 CONFIG_NVS=y
 CONFIG_SETTINGS_NVS=y
@@ -29,5 +42,5 @@ CONFIG_FLASH_MAP=y
 CONFIG_BUILD_OUTPUT_HEX=y
 CONFIG_USE_DT_CODE_PARTITION=y
 
-# Use maximum Bluetooth transmit power
+# Use maximum Bluetooth transmit power.
 CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
