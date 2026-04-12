@@ -41,6 +41,3 @@ CONFIG_FLASH_MAP=y
 # Build HEX firmware (no UF2 bootloader on CX-40)
 CONFIG_BUILD_OUTPUT_HEX=y
 CONFIG_USE_DT_CODE_PARTITION=y
-
-# Use maximum Bluetooth transmit power.
-CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
