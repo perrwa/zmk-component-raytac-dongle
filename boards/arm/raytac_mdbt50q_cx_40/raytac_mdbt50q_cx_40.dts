@@ -1,0 +1,99 @@
+/*
+ * The CX-40 ships with Nordic's built-in Open bootloader (nRF5 SDK).
+ * No SoftDevice or UF2 — flashing is via nrfutil DFU over USB serial.
+ */
+
+/dts-v1/;
+#include <nordic/nrf52840_qiaa.dtsi>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+    model = "Raytac MDBT50Q-CX-40";
+
+    chosen {
+        zephyr,code-partition = &code_partition;
+        zephyr,sram = &sram0;
+        zephyr,flash = &flash0;
+        zephyr,console = &cdc_acm_uart;
+    };
+
+    leds {
+        compatible = "gpio-leds";
+        led0: led_0 {
+            gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+            label = "Blue LED";
+        };
+    };
+
+    buttons {
+        compatible = "gpio-keys";
+        button0: button_0 {
+            gpios = <&gpio1 6 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
+            label = "Push button switch";
+            zephyr,code = <INPUT_KEY_0>;
+        };
+    };
+
+    aliases {
+        sw0 = &button0;
+    };
+};
+
+&adc {
+    status = "okay";
+};
+
+&gpiote {
+    status = "okay";
+};
+
+&gpio0 {
+    status = "okay";
+};
+
+&gpio1 {
+    status = "okay";
+};
+
+zephyr_udc0: &usbd {
+    compatible = "nordic,nrf-usbd";
+    status = "okay";
+    cdc_acm_uart: cdc_acm_uart {
+        compatible = "zephyr,cdc-acm-uart";
+    };
+};
+
+/*
+ * Flash partition table for Nordic nRF5 SDK bootloader.
+ *
+ *   0x000000 - 0x001000  MBR (4K)
+ *   0x001000 - 0x0ed000  Application (944K)
+ *   0x0ed000 - 0x0f4000  NVS storage (28K, 7 pages)
+ *   0x0f4000 - 0x100000  Nordic bootloader + settings (48K)
+ */
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		mbr_partition: partition@0 {
+			label = "MBR";
+			reg = <0x00000000 DT_SIZE_K(4)>;
+		};
+		code_partition: partition@1000 {
+			label = "Application";
+			reg = <0x00001000 DT_SIZE_K(944)>;
+		};
+
+		storage_partition: partition@ed000 {
+			label = "storage";
+			reg = <0x000ed000 DT_SIZE_K(28)>;
+		};
+
+		boot_partition: partition@f4000 {
+			label = "Nordic Bootloader";
+			reg = <0x000f4000 DT_SIZE_K(48)>;
+		};
+	};
+};
