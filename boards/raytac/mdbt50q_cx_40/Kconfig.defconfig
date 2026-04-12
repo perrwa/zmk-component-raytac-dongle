@@ -1,5 +1,3 @@
 if BOARD_MDBT50Q_CX_40
 
-source "boards/common/usb/Kconfig.cdc_acm_serial.defconfig"
-
 endif # BOARD_MDBT50Q_CX_40
