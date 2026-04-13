@@ -98,7 +98,7 @@ Install Nordic's `nrfutil` CLI via Homebrew, then add the `nrf5sdk-tools` subcom
 
 ```bash
 brew install --cask nrfutil
-nrfutil install nrf5sdk-tools
+nrfutil install nrf5sdk-tools==1.1.0
 ```
 
 Verify it's working:
