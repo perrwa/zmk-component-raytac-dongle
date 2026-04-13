@@ -24,3 +24,9 @@ CX-40: Nordic Open Bootloader, `BUILD_OUTPUT_HEX`, MBR (4K) + 944K app, LED P0.0
 - NVS: 7 sectors (28K). BT: max TX power (`PLUS_8`), Coded PHY
 - Version tags/branches match ZMK releases (`v0.3`, `v0.4`)
 - Conventional commits scoped to board: `feat:`, `fix(cx40):`, `docs:`
+
+## Workflow
+
+- **PRs target origin** (`perrwa/zmk-component-raytac-dongle`) by default. Only open against upstream (`rschenk/zmk-component-raytac-dongle`) when explicitly asked.
+- **No CI in this repo** — builds are tested via `perrwa/zmk-config` GitHub Actions. Don't look for local build/test commands.
+- **Debugging**: State the error and goal before investigating. Don't exhaustively catalog upstream files — investigate incrementally.
