@@ -6,6 +6,7 @@
 /dts-v1/;
 #include <nordic/nrf52840_qiaa.dtsi>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <behaviors.dtsi>
 
 / {
     model = "Raytac MDBT50Q-CX-40";
@@ -37,6 +38,57 @@
     aliases {
         sw0 = &button0;
     };
+
+    behaviors {
+        /*
+         * One press does nothing; two presses within tapping-term-ms enter
+         * the bootloader. Driven by the sideband runner below, so this
+         * never needs a keymap position. Safe to drive from a sideband
+         * runner despite the "avoid tap-holds/sticky-keys" warning in ZMK's
+         * kscan-sideband-behaviors docs: tap-dance keys its state off
+         * event.position alone (behavior_tap_dance.c), and the sideband
+         * runner hands every press a fixed position = INT32_MAX
+         * (kscan_sideband_behaviors.c), distinct from tap-dance's own
+         * "free slot" sentinel of UINT32_MAX — so repeat presses of this
+         * button accumulate in the same slot. Its only other input is a
+         * zmk_position_state_changed listener that can cut a pending dance
+         * short from another key; sideband presses never raise that event,
+         * so nothing here can interrupt it.
+         */
+        bootloader_dance: bootloader_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <400>;
+            bindings = <&none>, <&bootloader>;
+        };
+    };
+
+    bootloader_scan: bootloader_scan {
+        compatible = "zmk,kscan-gpio-direct";
+        input-keys = <&button0>;
+    };
+
+    bootloader_sideband: bootloader_sideband {
+        compatible = "zmk,kscan-sideband-behaviors";
+        kscan = <&bootloader_scan>;
+        auto-enable;
+
+        bootloader_button {
+            row = <0>;
+            column = <0>;
+            bindings = <&bootloader_dance>;
+        };
+    };
+};
+
+/*
+ * Nordic's Open Bootloader enters DFU when NRF_POWER->GPREGRET holds
+ * BOOTLOADER_DFU_START (0xB1); the bootloader clears the bits once it acts
+ * on them. ZMK defaults &bootloader to RST_UF2 (0x57), which is Adafruit's
+ * magic value — this board does not have Adafruit's bootloader.
+ */
+&bootloader {
+    type = <0xb1>;
 };
 
 &adc {
