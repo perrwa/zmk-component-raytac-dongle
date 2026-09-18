@@ -71,11 +71,15 @@ include:
 
 ## Flashing The Raytac
 
+### Entering The Bootloader From A Running Keyboard
+
+Both boards bind `&bootloader` to a **double press** of the onboard button, so you don't need to unplug the dongle to start a flash—just double-press the button (within 400ms) while the dongle is running normally. A single press does nothing, so a stray bump of the button is harmless.
+
+This still requires the dongle to boot into your firmware first, so it doesn't help if the firmware is broken—see the per-board sections below for the unplug-and-hold fallback, which always works.
+
 ### Flashing The RX (UF2 Bootloader)
 
-Entering the bootloader mode is a bit annoying. Unplug the dongle, then hold the button down while plugging it back in.
-
-For some reason you *can't* double-click the reset button like on many boards.
+If the firmware doesn't boot (or on first flash), entering the bootloader is a bit more annoying: unplug the dongle, then hold the button down while plugging it back in.
 
 ### Flashing The CX-40 (Built-In Bootloader)
 
@@ -100,7 +104,9 @@ nrfutil nrf5sdk-tools --help
 
 #### 2. Enter Bootloader Mode
 
-Hold the button (on the far side of the board from the USB-C connector) while plugging the dongle into USB. The red LED should start a fade pattern, which means the bootloader is running.
+If your firmware is already running, double-press the button—see [Entering The Bootloader From A Running Keyboard](#entering-the-bootloader-from-a-running-keyboard) above.
+
+Otherwise, hold the button (on the far side of the board from the USB-C connector) while plugging the dongle into USB. The red LED should start a fade pattern, which means the bootloader is running.
 
 > **Note:** The button doesn't face up—you push it from the outside in, towards the USB connector.
 
