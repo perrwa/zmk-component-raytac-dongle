@@ -15,6 +15,7 @@
 /dts-v1/;
 #include <nordic/nrf52840_qiaa.dtsi>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <behaviors.dtsi>
 
 / {
     model = "Raytac MDBT50Q-RX";
@@ -45,6 +46,39 @@
 
     aliases {
         sw0 = &button0;
+    };
+
+    behaviors {
+        /*
+         * One press does nothing; two presses within tapping-term-ms enter
+         * the bootloader. See raytac_mdbt50q_cx_40.dts for why tap-dance is
+         * safe to drive from a sideband runner. No &bootloader override
+         * needed here — 0x57 (RST_UF2) is already correct for the RX's
+         * Adafruit nRF52 bootloader.
+         */
+        bootloader_dance: bootloader_dance {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <400>;
+            bindings = <&none>, <&bootloader>;
+        };
+    };
+
+    bootloader_scan: bootloader_scan {
+        compatible = "zmk,kscan-gpio-direct";
+        input-keys = <&button0>;
+    };
+
+    bootloader_sideband: bootloader_sideband {
+        compatible = "zmk,kscan-sideband-behaviors";
+        kscan = <&bootloader_scan>;
+        auto-enable;
+
+        bootloader_button {
+            row = <0>;
+            column = <0>;
+            bindings = <&bootloader_dance>;
+        };
     };
 };
 
